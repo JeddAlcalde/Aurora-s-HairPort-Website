@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Project for \"Aurora's Hairport\" located at 530 Newark Ave Suite D, Jersey City, NJ, United States, New Jersey.",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "start" : "node ./app.js",
     "seed" : "node ./tasks/seed.js"
