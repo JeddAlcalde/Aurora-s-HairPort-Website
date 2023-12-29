@@ -1,0 +1,23 @@
+{
+  "name": "aurora-s-hairport-website",
+  "version": "1.0.0",
+  "description": "Project for \"Aurora's Hairport\" located at 530 Newark Ave Suite D, Jersey City, NJ, United States, New Jersey.",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start" : "node ./app.js",
+    "seed" : "node ./tasks/seed.js"
+  },
+  "author": "Jedd Alcalde",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-handlebars": "^7.1.2",
+    "express-session": "^1.17.3",
+    "is-url": "^1.2.4",
+    "mongodb": "^6.3.0",
+    "validator": "^13.11.0"
+  }
+}
