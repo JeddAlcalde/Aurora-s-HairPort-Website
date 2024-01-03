@@ -76,8 +76,6 @@ const exportedMethods = {
             throw `Email is invalid`;
         }
 
-        const userName = email.split("@")[0];
-
         let passMatch = await bcrypt.compare(password, getUser.password)
         if (!passMatch) {
             throw `Password is invalid`;
