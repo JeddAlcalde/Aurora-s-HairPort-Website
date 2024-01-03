@@ -289,3 +289,8 @@ export const validZipcode = (string, argName) => {
     }
     return string
 }
+
+export const validPhoneNumber = (string, argName) => {
+    if (string.length == 0) { throw `Error: ${argName} must be supplied`; }
+    if (string.length !== 9) { throw `Error: ${argName} must have length 9`; }
+}
