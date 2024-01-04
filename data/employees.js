@@ -23,7 +23,8 @@ const exportedMethods = {
         return employee;
     },
     async registerEmployee(firstName, lastName, email, password, confirmPassword, phoneNum) {
-        //need to design a way for admin to validate when an employee is being registered
+        //used to validate an employees first login
+        //used AFTER admin create a newEmployee()
         try {
             firstName = validation.validString(firstName, 'First Name');
             lastName = validation.validString(lastName, 'Last Name');
@@ -38,8 +39,8 @@ const exportedMethods = {
         const employeeCollection = await employees();
 
         const findEmail = await employeeCollection.findOne({ email: email.toLowerCase() });
-        if (findEmail) {
-            throw `Error: email already exists, pick another.`;
+        if (!findEmail) {
+            throw `Error: email doesn't exist, make sure admin employee admits new employee.`;
         }
 
         const findPhoneNum = await employeeCollection.findOne({ email: email.toLowerCase() });
@@ -53,25 +54,18 @@ const exportedMethods = {
         
         const hashedPassword = await bcrypt.hash(password, 16);
 
-        let newEmployee = {
-            email: email,
-            phoneNum: phoneNum,
-            password: hashedPassword,
-            firstName: firstName,
-            lastName: lastName,
-            bookedHours : [],
-            averageRating : 0,
-            services : [],
-            role : ""
-        }
+        const userInfo = await employeeCollection.findOne({ email: email });
 
-        let insertInfo = await employeeCollection.insertOne(newEmployee);
-        if (!insertInfo.acknowledged || !insertInfo.insertedId) {
-            throw 'Error: Failed to add employee';
-        }
-        return { insertedEmployee: true };
+        const updateEmployeeInfo = await employeeCollection.updateOne(
+            { _id: userInfo._id },
+            { $push: { phoneNum: phoneNum } },
+            { $push: {password: hashedPassword} },
+            { $push: {active : true} }
+        );
+        return { registeredEmployee: true };
     },
     async loginEmployee(email, password) {
+        //only usable once an employee has been admitted and registered IN THAT ORDER.
         const employeeCollection = await employees()
 
         email = email.toLowerCase()
@@ -95,6 +89,52 @@ const exportedMethods = {
             services: getEmployee.services,
             role : getEmployee.role
         }
+    },
+    async admitNewEmployee(firstName, lastName, email, employeeRole){
+        //only accessible by admin role
+        //creates new employee, newly admitted employees need to register only once and then can login
+        try {
+            firstName = validation.validString(firstName, 'First Name');
+            lastName = validation.validString(lastName, 'Last Name');
+            email = validation.validEmail(email, 'Email').toLowerCase();
+        } catch (e) {
+            throw e;
+        }
+
+        try{
+            if(employeeRole !== "admin"){
+                throw "employees without admin role cannot admit new employees";
+            }
+        }
+        catch(e){
+            throw e;
+        }
+
+        const employeeCollection = await employees();
+
+        const findEmail = await employeeCollection.findOne({ email: email.toLowerCase() });
+        if (findEmail) {
+            throw `Error: email already exists, pick another.`;
+        }
+
+        let newEmployee = {
+            email: email,
+            phoneNum: "",
+            password: "",
+            firstName: firstName,
+            lastName: lastName,
+            bookedHours : [],
+            averageRating : 0,
+            services : [],
+            role : "",
+            active : false
+        }
+
+        let insertInfo = await employeeCollection.insertOne(newEmployee);
+        if (!insertInfo.acknowledged || !insertInfo.insertedId) {
+            throw 'Error: Failed to add employee';
+        }
+        return { admittedEmployee: true };
     }
 }
 
