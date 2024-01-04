@@ -9,14 +9,14 @@ const exportedMethods = {
         return await employeeCollection.find({}).toArray();
     },
     async getEmployeeById(id) {
-        id = validation.validId(id);
+        id = validation.validId(id, "Id");
         const employeeCollection = await employees();
         const employee = await employeeCollection.findOne({ _id: new ObjectId(id) });
         if (!employee) throw 'Error: employee not found';
         return employee;
     },
     async getEmployeeByEmail(email) {
-        email = validation.validEmail(email).toLowerCase();
+        email = validation.validEmail(email, "email").toLowerCase();
         const employeeCollection = await employees();
         const employee = await employeeCollection.findOne({ email: email });
         if (!employee) throw 'Error: Employee not found';
@@ -29,9 +29,9 @@ const exportedMethods = {
             firstName = validation.validString(firstName, 'First Name');
             lastName = validation.validString(lastName, 'Last Name');
             email = validation.validEmail(email, 'Email').toLowerCase();
-            password = validation.validPassword(password);
-            confirmPassword = validation.validPassword(confirmPassword);
-            phoneNum = validation.validPhoneNumber(phoneNum);
+            password = validation.validPassword(password, 'Password');
+            confirmPassword = validation.validPassword(confirmPassword, 'Confirm Password');
+            phoneNum = validation.validPhoneNumber(phoneNum, "Phone Number");
         } catch (e) {
             throw e;
         }
@@ -54,10 +54,10 @@ const exportedMethods = {
         
         const hashedPassword = await bcrypt.hash(password, 16);
 
-        const userInfo = await employeeCollection.findOne({ email: email });
+        const employeeInfo = await employeeCollection.findOne({ email: email });
 
         const updateEmployeeInfo = await employeeCollection.updateOne(
-            { _id: userInfo._id },
+            { _id: employeeInfo._id },
             { $push: { phoneNum: phoneNum } },
             { $push: {password: hashedPassword} },
             { $push: {active : true} }
@@ -67,6 +67,13 @@ const exportedMethods = {
     async loginEmployee(email, password) {
         //only usable once an employee has been admitted and registered IN THAT ORDER.
         const employeeCollection = await employees()
+
+        try {
+            email = validation.validEmail(email, 'Email').toLowerCase();
+            password = validation.validPassword(password, 'Password');
+        } catch (e) {
+            throw e;
+        }
 
         email = email.toLowerCase()
         const getEmployee = await employeeCollection.findOne({ email: email })
