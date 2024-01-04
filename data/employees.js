@@ -29,8 +29,8 @@ const exportedMethods = {
             firstName = validation.validString(firstName, 'First Name');
             lastName = validation.validString(lastName, 'Last Name');
             email = validation.validEmail(email, 'Email').toLowerCase();
-            password = validation.validPassword(password, 'Password');
-            confirmPassword = validation.validPassword(confirmPassword, 'Confirm Password');
+            password = validation.validPassword(password);
+            confirmPassword = validation.validPassword(confirmPassword);
             phoneNum = validation.validPhoneNumber(phoneNum, "Phone Number");
         } catch (e) {
             throw e;
@@ -70,7 +70,7 @@ const exportedMethods = {
 
         try {
             email = validation.validEmail(email, 'Email').toLowerCase();
-            password = validation.validPassword(password, 'Password');
+            password = validation.validPassword(password);
         } catch (e) {
             throw e;
         }

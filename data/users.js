@@ -9,14 +9,14 @@ const exportedMethods = {
         return await userCollection.find({}).toArray();
     },
     async getUserById(id) {
-        id = validation.validId(id);
+        id = validation.validId(id, "Id");
         const userCollection = await users();
         const user = await userCollection.findOne({ _id: new ObjectId(id) });
         if (!user) throw 'Error: User not found';
         return user;
     },
     async getUserByEmail(email) {
-        email = validation.validEmail(email).toLowerCase();
+        email = validation.validEmail(email, "Email").toLowerCase();
         const userCollection = await users();
         const user = await userCollection.findOne({ email: email });
         if (!user) throw 'Error: User not found';
@@ -29,7 +29,7 @@ const exportedMethods = {
             email = validation.validEmail(email, 'Email').toLowerCase();
             password = validation.validPassword(password);
             confirmPassword = validation.validPassword(confirmPassword);
-            phoneNum = validation.validPhoneNumber(phoneNum);
+            phoneNum = validation.validPhoneNumber(phoneNum, "Phone Number");
         } catch (e) {
             throw e;
         }
