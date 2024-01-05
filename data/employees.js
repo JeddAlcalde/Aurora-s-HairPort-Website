@@ -1,4 +1,4 @@
-import { employees } from '../config/mongoCollections.js';
+import { employees, appointments } from '../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
 import * as validation from '../validators.js';
 import bcrypt from 'bcrypt';
@@ -142,6 +142,26 @@ const exportedMethods = {
             throw 'Error: Failed to add employee';
         }
         return { admittedEmployee: true };
+    },
+    async isFree(id, date, timeStart, timeEnd){
+        try{
+            id = validation.validId(id, "Id")
+            const employee = this.getEmployeeById(id);
+            const bookedList = employee.bookedHours;
+            const appointmentCollection = await appointments();
+            for(let i = 0; i < bookedHours.length; i++){
+                let appointment = await appointmentCollection.findOne({ _id: new ObjectId(id) });
+                if(appointment.date === date){
+                    if(validation.doesTimeOverlap(appointment.startTime, appointment.endTime, timeStart, timeEnd)){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        catch(e){
+            throw e;
+        }
     }
 }
 

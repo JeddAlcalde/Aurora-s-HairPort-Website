@@ -9,6 +9,9 @@ const exportedMethods = {
             description = validation.validBio(description);
             price = validation.validNumber(price);
             timeTaken = validation.validNumber(timeTaken);
+            if(timeTaken % 10 !== 0){
+                throw "Service Time must be a multiple of 10.";
+            }
         }
         catch(e){
             throw e;
@@ -26,12 +29,15 @@ const exportedMethods = {
         }
         return { insertedService: true };
     },
-    async updateService(name, description, price, timeTaken, employeeRole) {
+    async updateService(name, newDescription, newPrice, newTimeTaken, employeeRole) {
         try{
             name = validation.validString(name, "Service Name");
-            description = validation.validBio(description, "Description");
-            price = validation.validNumber(price, "Price");
-            timeTaken = validation.validNumber(timeTaken, "Time Taken");
+            newDescription = valiation.validBio(newDescription, "Description");
+            newPrice = validation.validNumber(newPrice, "Price");
+            newTimeTaken = validation.validNumber(newTimeTaken, "Time Taken");
+            if(newTimeTaken % 10 !== 0){
+                throw "Service Time must be a multiple of 10.";
+            }
         }
         catch(e){
             throw e;
@@ -44,15 +50,21 @@ const exportedMethods = {
         catch(e){
             throw e;
         }
+
+        const serviceCollection = await services();
+
         const serviceInfo = await serviceCollection.findOne({ name: name });
 
-        const updateServiceInfo = await employeeCollection.updateOne(
+        const updateServiceInfo = await serviceCollection.updateOne(
             { _id: serviceInfo._id },
-            { $set: {description: description} },
-            { $set: {price: price} },
-            { $set: {timeTaken : timeTaken} }
+            { $set: {description: newDescription} },
+            { $set: {price: newPrice} },
+            { $set: {timeTaken : newTimeTaken} }
         );
-    },
+        if (updateServiceInfo.modifiedCount !== 0){
+            return {updatedService : true};
+        }
+    }
 }
 
 export default exportedMethods;

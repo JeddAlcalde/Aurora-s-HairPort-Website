@@ -230,6 +230,7 @@ export const validTime = (startTime, endTime) => {
         }
         throw "Error: Invalid time.";
     }
+    /*
     //check end time is at least 30 minutes later
     const startMin = Number(startTime[0]) * 60 + Number(startTime[1]);
     const endMin = Number(endTime[0]) * 60 + Number(endTime[1]);
@@ -237,6 +238,7 @@ export const validTime = (startTime, endTime) => {
     if ((endMin - startMin) < 30) {
         throw "Error: Invalid time.";
     }
+    */
     startTime[0] = startTime[0].toString()
     endTime[0] = endTime[0].toString()
     const finalTime = [startTime, endTime]
@@ -293,4 +295,90 @@ export const validZipcode = (string, argName) => {
 export const validPhoneNumber = (string, argName) => {
     if (string.length == 0) { throw `Error: ${argName} must be supplied`; }
     if (string.length !== 9) { throw `Error: ${argName} must have length 9`; }
+}
+
+export const doesTimeOverlap = (startA, endA, startB, endB) => {
+    //takes times in 24hr time formats
+    //ex 1:09PM is 13:09
+    //finds if 2 completely ambiguous time ranges overlap each other, assuming they are on the same day
+    //currently doesn't confirm that start is less than end
+    if(endA === startB || endB === startB){
+        return false;
+    }
+    if(startA === startB || endA === endB){
+        return true;
+    }
+    const startAsplit = startA.split(":");
+    const startAhour = startAsplit[0];
+    const startAmin = startAsplit[1];
+    const startBsplit = startB.split(":");
+    const startBhour = startBsplit[0];
+    const startBmin = startBsplit[1];
+
+    const endAsplit = endA.split(":");
+    const endAhour = endAsplit[0];
+    const endAmin = endAsplit[1];
+    const endBsplit = endB.split(":");
+    const endBhour = endBsplit[0];
+    const endBmin = endBsplit[1];
+
+    // sA 13:10
+    // eA 13:40
+    // sB 13:20
+    // eB 13:30
+    if(startAhour === startBhour){
+        if(startAmin === startBmin){
+            return true;
+        }
+        if(startAmin < startBmin){
+            if(endAmin < startBmin){
+                return false;
+            }
+            return true;
+        }
+        if(startBmin < startAmin){
+            if(endBmin < startAmin){
+                return false;
+            }
+            return true;
+        }
+    }
+    if(startAhour < startBhour){
+        if(endAhour < startBhour){
+            return false;
+        }
+        if(startBhour < endAhour){
+            return true;
+        }
+        if(endAhour === startBhour){
+            if(endAmin < startBmin){
+                return false;
+            }
+            if(endAmin === startBmin){
+                return false;
+            }
+            if(endAmin > startBmin){
+                return true;
+            }
+        }
+    }
+    if(startBhour < startAhour){
+        if(endBhour < startAhour){
+            return false;
+        }
+        if(startAhour < endBhour){
+            return true;
+        }
+        if(endBhour === startAhour){
+            if(endBmin < startAmin){
+                return false;
+            }
+            if(endBmin === startAmin){
+                return false;
+            }
+            if(endBmin > startAmin){
+                return true;
+            }
+        }
+    }
 }
