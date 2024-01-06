@@ -382,3 +382,24 @@ export const doesTimeOverlap = (startA, endA, startB, endB) => {
         }
     }
 }
+
+export const validWorkDay = (workDay, argName) =>{
+    try{
+        workDay = this.validString(workDay);
+    }
+    catch(e){
+        throw e;
+    }
+    workDay = workDay.trim();
+    if(workDay[2] !== ":" || workDay[5] !== "-" || workDay[8] !== ":"){
+        throw "workDay not in proper format";
+    }
+    const workDaySplit = workDay.split("-").split(":");
+    const map1 = workDaySplit.map((x) => parseInt(x));
+    if(map1[0] < 0 || map1[0] > 23 || map1[2] < 0 || map1[2] > 23){
+        throw "Hours in incorrect format"
+    }
+    if(map1[1] < 0 || map1[1] > 59 || map1[3] < 0 || map1[3] > 59){
+        throw "Minutes in incorrect format"
+    }
+}

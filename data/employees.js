@@ -1,5 +1,6 @@
 import { employees, appointments } from '../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
+import schedulesFunc from "./schedules.js";
 import * as validation from '../validators.js';
 import bcrypt from 'bcrypt';
 
@@ -158,6 +159,28 @@ const exportedMethods = {
                 }
             }
             return true;
+        }
+        catch(e){
+            throw e;
+        }
+    },
+    async getSchedule(id, week){
+        try{
+            id = validation.validId(id);
+            const employee = this.getEmployeeById(id);
+            week = validation.validDate(week);
+            const weeksplit = week.split("/");
+            const checkDate = new Date(weeksplit[2]+"-"+weeksplit[0]+"-"+weeksplit[1]);
+            if(checkDate.getDay !== 0){
+                throw "Week date must be a Sunday"
+            }
+            const schedules = schedulesFunc.getAllSchedules();
+            for(let i = 0; i < schedules.length; i++){
+                if(schedules[i].week === week && schedules[i].employeeId === id){
+                    return schedules[i];
+                }
+            }
+            throw "Schedule of week : ${week} was not found";
         }
         catch(e){
             throw e;

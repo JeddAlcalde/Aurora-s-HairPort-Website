@@ -60,7 +60,7 @@ const exportedMethods = {
             { $set: {description: newDescription} },
             { $set: {price: newPrice} },
             { $set: {timeTaken : newTimeTaken} }
-        );
+        )
         if (updateServiceInfo.modifiedCount !== 0){
             return {updatedService : true};
         }
